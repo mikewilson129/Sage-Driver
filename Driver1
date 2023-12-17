@@ -1,0 +1,45 @@
+// Zigbee Button Sage by Hughes 206611 Edge Driver
+
+// Define the capabilities of the device
+local capabilities = require "st.capabilities"
+local device_capabilities = {
+  [capabilities.button] = true,
+}
+
+// Define the clusters that the device supports
+local clusters = require "st.zigbee.zcl.clusters"
+local device_clusters = {
+  [clusters.Button] = true,
+}
+
+// Define the device manufacturer and model
+local device_manufacturer = "Sage"
+local device_model = "206611"
+
+// Create the driver
+local driver = device_management.create_driver(
+  "Zigbee Button Sage by Hughes 206611",
+  device_capabilities,
+  device_clusters,
+  device_manufacturer,
+  device_model
+)
+
+// Register the driver with SmartThings
+driver.register()
+
+// Define the device's state
+local device_state = {
+  button_pressed = false,
+}
+
+// Handle button events
+driver.on_event(function(event)
+  if event.cluster == clusters.Button and event.event_type == "pushed" then
+    device_state.button_pressed = true
+    driver.update_state(device_state)
+  end
+end)
+
+// Expose the device's state to SmartThings
+driver.expose_state(device_state) 
